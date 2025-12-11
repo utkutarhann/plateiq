@@ -10,7 +10,7 @@ import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "PlateIQ - Yediğini Tanı, Sağlığını Yönet",
+  title: "utku tarhan",
   description: "Yapay zeka destekli yemek analizi ve kalori takip asistanı. Fotoğraf yükle, anında besin değerlerini öğren.",
   keywords: ["kalori hesaplama", "yemek analizi", "diyet", "yapay zeka", "sağlıklı beslenme"],
 };
