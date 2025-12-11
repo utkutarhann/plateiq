@@ -28,6 +28,7 @@ interface AnalysisResult {
 
 export default function FoodAnalyzer({ isAuthenticated = false }: { isAuthenticated?: boolean }) {
     const router = useRouter();
+    const [isUserAuthenticated, setIsUserAuthenticated] = useState(isAuthenticated);
     const [images, setImages] = useState<File[]>([]);
     const [previewUrls, setPreviewUrls] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
@@ -37,6 +38,23 @@ export default function FoodAnalyzer({ isAuthenticated = false }: { isAuthentica
     const [error, setError] = useState<string | null>(null);
     const [dailyCount, setDailyCount] = useState<number | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        setIsUserAuthenticated(isAuthenticated);
+    }, [isAuthenticated]);
+
+    useEffect(() => {
+        const checkSession = async () => {
+            if (!isUserAuthenticated) {
+                const supabase = createClient();
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    setIsUserAuthenticated(true);
+                }
+            }
+        };
+        checkSession();
+    }, []);
 
     useEffect(() => {
         const fetchDailyCount = async () => {
@@ -290,7 +308,7 @@ export default function FoodAnalyzer({ isAuthenticated = false }: { isAuthentica
                             </button>
                         </div>
                     </div>
-                ) : !isAuthenticated ? (
+                ) : !isUserAuthenticated ? (
                     <div
                         onClick={() => router.push("/login")}
                         style={{

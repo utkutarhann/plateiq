@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import FoodAnalyzer from "@/components/FoodAnalyzer";
 import HowItWorks from "@/components/HowItWorks";
+import HeaderAuth from "@/components/HeaderAuth";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -65,45 +66,7 @@ export default async function Home() {
 
         {/* Right: Profile Button */}
         <div>
-          {user ? (
-            <Link href="/dashboard/profile" style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              textDecoration: "none",
-              background: "white",
-              padding: "0.5rem 1rem 0.5rem 0.5rem",
-              borderRadius: "999px",
-              boxShadow: "0 2px 10px rgba(0,0,0,0.1)"
-            }}>
-              <div style={{
-                width: "32px",
-                height: "32px",
-                borderRadius: "50%",
-                overflow: "hidden",
-                border: "2px solid hsl(var(--primary))",
-              }}>
-                {/* Safe access for user metadata */}
-                {user?.user_metadata?.avatar_url ? (
-                  <img src={user?.user_metadata?.avatar_url} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                ) : (
-                  <div style={{ width: "100%", height: "100%", background: "hsl(var(--primary))", color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem" }}>
-                    {user?.email?.[0].toUpperCase()}
-                  </div>
-                )}
-              </div>
-              <span style={{ fontWeight: "600", color: "#333", fontSize: "0.9rem", display: "none" }} className="sm:inline">Profilim</span>
-            </Link>
-          ) : (
-            <Link href="/login" className="btn btn-primary" style={{
-              borderRadius: "999px",
-              padding: "0.75rem 1.5rem",
-              boxShadow: "0 4px 15px hsla(var(--primary), 0.3)",
-              fontSize: "0.95rem"
-            }}>
-              Giriş Yap
-            </Link>
-          )}
+          <HeaderAuth initialUser={user} />
         </div>
       </nav>
 
