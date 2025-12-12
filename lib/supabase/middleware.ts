@@ -59,14 +59,14 @@ export async function updateSession(request: NextRequest) {
     } = await supabase.auth.getUser();
 
 
-    // Protected routes logic
-    if (request.nextUrl.pathname.startsWith("/dashboard") && !user) {
-        return NextResponse.redirect(new URL("/login", request.url));
-    }
+    // Protected routes logic REMOVED
+    // if (request.nextUrl.pathname.startsWith("/dashboard") && !user) {
+    //     return NextResponse.redirect(new URL("/login", request.url));
+    // }
 
-    if ((request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/signup") && user) {
-        return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
+    // if ((request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/signup") && user) {
+    //     return NextResponse.redirect(new URL("/dashboard", request.url));
+    // }
 
     // Root redirect removed to allow Landing Page
 

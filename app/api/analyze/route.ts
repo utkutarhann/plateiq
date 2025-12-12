@@ -28,39 +28,19 @@ export async function POST(request: Request) {
 
         const { images } = validationResult.data;
 
-        // 3. Authentication & Daily Limit Check
-        const { createClient } = await import("@/lib/supabase/server");
-        const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
+        // 3. Authentication & Daily Limit Check REMOVED for public access
+        // const { createClient } = await import("@/lib/supabase/server");
+        // const supabase = await createClient();
+        // const { data: { user } } = await supabase.auth.getUser();
 
-        if (!user) {
-            return NextResponse.json(
-                { error: "Analiz yapmak için giriş yapmalısınız." },
-                { status: 401 }
-            );
-        }
+        // if (!user) {
+        //     return NextResponse.json(
+        //         { error: "Analiz yapmak için giriş yapmalısınız." },
+        //         { status: 401 }
+        //     );
+        // }
 
-        // Check daily usage (TRT Timezone: UTC+3)
-        const now = new Date();
-        // Add 3 hours to get TRT time
-        const trtNow = new Date(now.getTime() + (3 * 60 * 60 * 1000));
-        // Reset to start of day
-        trtNow.setUTCHours(0, 0, 0, 0);
-        // Subtract 3 hours to get UTC timestamp for start of TRT day
-        const startOfTrtDay = new Date(trtNow.getTime() - (3 * 60 * 60 * 1000));
-
-        const { count } = await supabase
-            .from("food_logs")
-            .select("*", { count: "exact", head: true })
-            .eq("user_id", user.id)
-            .gte("created_at", startOfTrtDay.toISOString());
-
-        if (count !== null && count >= 2) {
-            return NextResponse.json(
-                { error: "Günlük 2 ücretsiz analiz hakkınız doldu. Yarın tekrar bekleriz! 🕒" },
-                { status: 429 }
-            );
-        }
+        // Daily limit check removed
 
         const apiKey = process.env.OPENAI_API_KEY;
 

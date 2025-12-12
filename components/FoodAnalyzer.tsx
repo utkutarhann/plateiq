@@ -26,9 +26,10 @@ interface AnalysisResult {
     }[];
 }
 
-export default function FoodAnalyzer({ isAuthenticated = false }: { isAuthenticated?: boolean }) {
+export default function FoodAnalyzer({ isAuthenticated = true }: { isAuthenticated?: boolean }) {
     const router = useRouter();
-    const [isUserAuthenticated, setIsUserAuthenticated] = useState(isAuthenticated);
+    // Auth check removed for public access
+    const isUserAuthenticated = true;
     const [images, setImages] = useState<File[]>([]);
     const [previewUrls, setPreviewUrls] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
@@ -39,22 +40,7 @@ export default function FoodAnalyzer({ isAuthenticated = false }: { isAuthentica
     const [dailyCount, setDailyCount] = useState<number | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
-        setIsUserAuthenticated(isAuthenticated);
-    }, [isAuthenticated]);
-
-    useEffect(() => {
-        const checkSession = async () => {
-            if (!isUserAuthenticated) {
-                const supabase = createClient();
-                const { data: { session } } = await supabase.auth.getSession();
-                if (session) {
-                    setIsUserAuthenticated(true);
-                }
-            }
-        };
-        checkSession();
-    }, []);
+    // Auth effect removed
 
     useEffect(() => {
         const fetchDailyCount = async () => {
@@ -246,25 +232,11 @@ export default function FoodAnalyzer({ isAuthenticated = false }: { isAuthentica
                     <h3 style={{ fontSize: "1.2rem", fontWeight: "bold", color: "hsl(var(--foreground))" }}>
                         Fotoğraf Yükle
                     </h3>
-                    {dailyCount !== null && (
-                        <Tooltip content="Bugün 2 ücretsiz analiz hakkınız var. Her gün gece yarısı yenilenir.">
-                            <div style={{
-                                padding: "0.5rem 1rem",
-                                borderRadius: "999px",
-                                backgroundColor: isLimitReached ? "#fee2e2" : "#dcfce7",
-                                color: isLimitReached ? "#b91c1c" : "#15803d",
-                                fontWeight: "600",
-                                fontSize: "0.9rem",
-                                border: `1px solid ${isLimitReached ? "#fca5a5" : "#86efac"}`,
-                                cursor: "help"
-                            }}>
-                                Günlük Kalan Hakkın: {Math.max(0, 2 - (dailyCount || 0))}
-                            </div>
-                        </Tooltip>
-                    )}
+                    {/* Daily limit tooltip removed */}
                 </div>
 
-                {isLimitReached ? (
+                {/* Limit check removed */}
+                {false ? (
                     <div style={{
                         padding: "3rem 2rem",
                         textAlign: "center",
@@ -308,7 +280,7 @@ export default function FoodAnalyzer({ isAuthenticated = false }: { isAuthentica
                             </button>
                         </div>
                     </div>
-                ) : !isUserAuthenticated ? (
+                ) : false ? (
                     <div
                         onClick={() => router.push("/login")}
                         style={{

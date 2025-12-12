@@ -66,7 +66,7 @@ export default async function Home() {
 
         {/* Right: Profile Button */}
         <div>
-          <HeaderAuth initialUser={user} />
+          {/* Auth buttons removed */}
         </div>
       </nav>
 
@@ -139,7 +139,7 @@ export default async function Home() {
             border: "1px solid rgba(255,255,255,0.8)",
             boxShadow: "0 20px 40px -10px rgba(0,0,0,0.1)"
           }}>
-            <FoodAnalyzer isAuthenticated={!!user} />
+            <FoodAnalyzer isAuthenticated={true} />
           </div>
         </div>
       </section>
