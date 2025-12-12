@@ -4,9 +4,12 @@ import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import LoginModal from "./LoginModal";
+
 export default function HeaderAuth({ initialUser }: { initialUser: any }) {
     const [user, setUser] = useState(initialUser);
     const [loading, setLoading] = useState(!initialUser);
+    const [isLoginOpen, setIsLoginOpen] = useState(false);
 
     useEffect(() => {
         const supabase = createClient();
@@ -75,13 +78,25 @@ export default function HeaderAuth({ initialUser }: { initialUser: any }) {
     }
 
     return (
-        <Link href="/login" className="btn btn-primary" style={{
-            borderRadius: "999px",
-            padding: "0.75rem 1.5rem",
-            boxShadow: "0 4px 15px hsla(var(--primary), 0.3)",
-            fontSize: "0.95rem"
-        }}>
-            Giriş Yap
-        </Link>
+        <>
+            <button
+                onClick={() => setIsLoginOpen(true)}
+                className="btn btn-primary"
+                style={{
+                    borderRadius: "999px",
+                    padding: "0.75rem 1.5rem",
+                    boxShadow: "0 4px 15px hsla(var(--primary), 0.3)",
+                    fontSize: "0.95rem",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    cursor: "pointer",
+                    border: "none"
+                }}
+            >
+                <span>→]</span> MEMBER LOGIN
+            </button>
+            <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+        </>
     );
 }

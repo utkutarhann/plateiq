@@ -66,7 +66,7 @@ export default async function Home() {
 
         {/* Right: Profile Button */}
         <div>
-          {/* Auth buttons removed */}
+          <HeaderAuth initialUser={user} />
         </div>
       </nav>
 
