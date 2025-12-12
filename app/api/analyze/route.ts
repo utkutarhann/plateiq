@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { AnalyzeRequestSchema } from "@/lib/validations";
 import { rateLimit } from "@/lib/rate-limit";
-import { headers } from "next/headers";
+import { headers, cookies } from "next/headers";
 
 export async function POST(request: Request) {
     try {
@@ -28,19 +28,31 @@ export async function POST(request: Request) {
 
         const { images } = validationResult.data;
 
-        // 3. Authentication & Daily Limit Check REMOVED for public access
-        // const { createClient } = await import("@/lib/supabase/server");
-        // const supabase = await createClient();
-        // const { data: { user } } = await supabase.auth.getUser();
+        // 3. Device-Based Rate Limiting (Cookie)
+        const cookieStore = await cookies();
+        const usageCookie = cookieStore.get("device_usage");
+        const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 
-        // if (!user) {
-        //     return NextResponse.json(
-        //         { error: "Analiz yapmak için giriş yapmalısınız." },
-        //         { status: 401 }
-        //     );
-        // }
+        let currentCount = 0;
 
-        // Daily limit check removed
+        if (usageCookie) {
+            try {
+                const [date, count] = usageCookie.value.split(":");
+                if (date === today) {
+                    currentCount = parseInt(count, 10);
+                }
+            } catch (e) {
+                // Invalid cookie, reset
+                currentCount = 0;
+            }
+        }
+
+        if (currentCount >= 2) {
+            return NextResponse.json(
+                { error: "Günlük 2 ücretsiz analiz hakkınız doldu. Yarın tekrar bekleriz! 🕒" },
+                { status: 429 }
+            );
+        }
 
         const apiKey = process.env.OPENAI_API_KEY;
 
@@ -101,18 +113,30 @@ export async function POST(request: Request) {
                     content: content,
                 },
             ],
+            response_format: { type: "json_object" },
             max_tokens: 500,
         });
 
         const responseContent = response.choices[0].message.content;
         const jsonStr = responseContent?.replace(/```json/g, "").replace(/```/g, "").trim();
-
         if (!jsonStr) {
             throw new Error("AI yanıtı boş");
         }
 
         const result = JSON.parse(jsonStr);
-        return NextResponse.json(result);
+
+        const apiResponse = NextResponse.json(result);
+
+        // Update usage cookie
+        apiResponse.cookies.set("device_usage", `${today}:${currentCount + 1}`, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 60 * 60 * 24, // 24 hours
+            path: "/",
+        });
+
+        return apiResponse;
 
     } catch (error: any) {
         console.error("Analysis error:", error);

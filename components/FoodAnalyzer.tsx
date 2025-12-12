@@ -144,6 +144,10 @@ export default function FoodAnalyzer({ isAuthenticated = true }: { isAuthenticat
 
             if (!response.ok) {
                 console.error("API error:", data);
+                // Handle rate limit specifically
+                if (response.status === 429) {
+                    throw new Error(data.error || "Günlük limit aşıldı.");
+                }
                 throw new Error(data.error || "Analiz başarısız oldu.");
             }
 
